@@ -937,7 +937,7 @@ BoolResult RationalNumberType::isExplicitlyConvertibleTo(Type const& _convertTo)
 	auto category = _convertTo.category();
 	if (category == Category::FixedBytes)
 		return false;
-	else if (category == Category::Address)
+	else if (dynamic_cast<AddressType const*>(&_convertTo))
 		return !(isNegative() || isFractional() || integerType()->numBits() > 160);
 	else if (category == Category::Integer)
 		return false;
