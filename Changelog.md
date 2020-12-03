@@ -20,6 +20,8 @@ Breaking Changes:
  * Type System: Declarations with the name ``this``, ``super`` and ``_`` are disallowed, with the exception of public functions and events.
  * Type System: Disallow ``type(super)``.
  * Type System: Disallow ``msg.data`` in ``receive()`` function.
+ * Type System: Address-literals and explicit conversions of integer-literals into ``address `` will have type ``address`` instead of ``address payable``.
+ * Type System: The global variables ``tx.origin`` and ``msg.sender`` have type ``address`` instead of ``address payable``.
  * Command Line Interface: JSON fields `abi`, `devdoc`, `userdoc` and `storage-layout` are now sub-objects rather than strings.
  * Scanner: Remove support for the ``\b``, ``\f``, and ``\v`` escape sequences.
 

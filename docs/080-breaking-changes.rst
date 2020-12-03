@@ -52,6 +52,13 @@ New Restrictions
      with ``type(uint).max``.
   3. Explicit conversions between literals and enums are only allowed if the literal can
      represent a value in the enum.
+  4. Explicit conversions between literals and ``address`` type (e.g. ``address(literal)``) will
+     have the type ``address`` instead of ``address payable``. One can get a payable address type by
+     using an explicit conversion, i.e., ``payable(literal)``.
+
+* :ref:`Address literals<address_literals>` have the type ``address`` instead of ``address
+  payable``. They can be converted to ``address payable`` by using an explicit conversion, e.g.
+  ``payable(0xdCad3a6d3569DF655070DEd06cb7A1b2Ccd1D3AF)``.
 
 * There are new restrictions on explicit type conversions. The conversion is only allowed when there
   is at most one change in sign, width or type-category (``int``, ``address``, ``bytesNN``, etc.)
@@ -90,6 +97,9 @@ New Restrictions
 
 * Remove support for the ``\b``, ``\f``, and ``\v`` escape sequences in code.
   They can still be inserted via hexadecimal escapes, e.g. ``\x08``, ``\x0c``, and ``\x0b``, respectively.
+* The global variables ``tx.origin`` and ``msg.sender`` have the type ``address`` instead of
+  ``address payable``. One can convert then into ``address payable`` by using an explicit
+  conversion, i.e., ``payable(tx.origin)`` or ``payable(msg.sender)``.
 
 Interface Changes
 =================

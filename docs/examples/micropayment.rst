@@ -144,7 +144,7 @@ The full contract
     // SPDX-License-Identifier: GPL-3.0
     pragma solidity >=0.7.0 <0.9.0;
     contract ReceiverPays {
-        address owner = msg.sender;
+        address payable owner = payable(msg.sender);
 
         mapping(uint256 => bool) usedNonces;
 
@@ -159,13 +159,13 @@ The full contract
 
             require(recoverSigner(message, signature) == owner);
 
-            msg.sender.transfer(amount);
+            payable(msg.sender).transfer(amount);
         }
 
         /// destroy the contract and reclaim the leftover funds.
         function shutdown() public {
             require(msg.sender == owner);
-            selfdestruct(msg.sender);
+            selfdestruct(owner);
         }
 
         /// signature methods.
@@ -347,7 +347,7 @@ The full contract
         constructor (address payable _recipient, uint256 duration)
             payable
         {
-            sender = msg.sender;
+            sender = payable(msg.sender);
             recipient = _recipient;
             expiration = block.timestamp + duration;
         }

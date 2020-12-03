@@ -143,12 +143,12 @@ contract GlobalRegistrar is Registrar, AuctionSystem {
 		{
 			if (block.timestamp < m_toRecord[_name].renewalDate)
 				revert();
-			bid(_name, msg.sender, msg.value);
+			bid(_name, payable(msg.sender), msg.value);
 		} else {
 			Record storage record = m_toRecord[_name];
 			if (record.owner != 0x0000000000000000000000000000000000000000)
 				revert();
-			m_toRecord[_name].owner = msg.sender;
+			m_toRecord[_name].owner = payable(msg.sender);
 			emit Changed(_name);
 		}
 	}
