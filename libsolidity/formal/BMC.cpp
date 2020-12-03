@@ -78,7 +78,7 @@ void BMC::analyze(SourceUnit const& _source, map<ASTNode const*, set<Verificatio
 			m_outerErrorReporter.warning(
 				8084_error,
 				SourceLocation(),
-				"BMC analysis was not possible since no integrated SMT solver (Z3 or CVC4) was found."
+				"BMC analysis was not possible since no SMT solver (Z3 or CVC4) was found."
 			);
 		}
 	}

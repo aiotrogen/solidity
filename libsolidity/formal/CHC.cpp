@@ -58,7 +58,9 @@ CHC::CHC(
 	m_queryTimeout(_timeout)
 {
 	bool usesZ3 = _enabledSolvers.z3;
-#ifndef HAVE_Z3
+#ifdef HAVE_Z3
+	usesZ3 = usesZ3 && Z3Interface::available();
+#else
 	usesZ3 = false;
 #endif
 	if (!usesZ3)
@@ -83,16 +85,19 @@ void CHC::analyze(SourceUnit const& _source)
 	checkVerificationTargets();
 
 	bool ranSolver = true;
-#ifndef HAVE_Z3
-	ranSolver = dynamic_cast<CHCSmtLib2Interface const*>(m_interface.get())->unhandledQueries().empty();
-#endif
+	if (auto const* smtLibInterface = dynamic_cast<CHCSmtLib2Interface const*>(m_interface.get()))
+		ranSolver = smtLibInterface->unhandledQueries().empty();
 	if (!ranSolver && !m_noSolverWarning)
 	{
 		m_noSolverWarning = true;
 		m_outerErrorReporter.warning(
 			3996_error,
 			SourceLocation(),
+#ifdef HAVE_Z3_DLOPEN
+			"CHC analysis was not possible since no suitable version of libz3.so was found."
+#else
 			"CHC analysis was not possible since no integrated z3 SMT solver was found."
+#endif
 		);
 	}
 	else
@@ -757,7 +762,7 @@ void CHC::resetSourceAnalysis()
 
 	bool usesZ3 = false;
 #ifdef HAVE_Z3
-	usesZ3 = m_enabledSolvers.z3;
+	usesZ3 = m_enabledSolvers.z3 && Z3Interface::available();
 	if (usesZ3)
 	{
 		/// z3::fixedpoint does not have a reset mechanism, so we need to create another.
