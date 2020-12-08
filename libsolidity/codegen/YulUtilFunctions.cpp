@@ -1687,10 +1687,10 @@ string YulUtilFunctions::copyByteArrayToStorageFunction(ArrayType const& _fromTy
 
 string YulUtilFunctions::copyValueArrayStorageToStorageFunction(ArrayType const& _fromType, ArrayType const& _toType)
 {
-	solAssert(
-		*_fromType.copyForLocation(_toType.location(), _toType.isPointer()) == dynamic_cast<ReferenceType const&>(_toType),
-		""
-	);
+	solAssert(_fromType.baseType()->isValueType(), "");
+	solAssert(_toType.baseType()->isValueType(), "");
+	solAssert(_fromType.baseType()->isImplicitlyConvertibleTo(*_toType.baseType()), "");
+
 	solAssert(!_fromType.isByteArray(), "");
 	solAssert(_fromType.dataStoredIn(DataLocation::Storage) && _toType.baseType()->isValueType(), "");
 	solAssert(_toType.dataStoredIn(DataLocation::Storage), "");
