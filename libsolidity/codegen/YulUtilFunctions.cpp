@@ -1734,19 +1734,11 @@ string YulUtilFunctions::copyValueArrayStorageToStorageFunction(ArrayType const&
 						let itemsInSlot := <itemsPerSlot>
 						if eq(i, fullSlots) { itemsInSlot := spill }
 						for { let j := 0 } lt(j, itemsInSlot) { j := add(j, 1) } {
-							let itemValue := and(srcSlotValue, <srcMask>)
-							<?leftAligned>itemValue := <srcAlignLeft>(itemValue)</leftAligned>
-							dstSlotValue := or(
-								dstSlotValue,
-								<?leftAligned>
-									<shiftRightDyn>(sub(256, mul(add(j, 1), mul(<dstStride>, 8))), itemValue)
-								<!leftAligned>
-									<shiftLeftDyn>(mul(j, mul(<dstStride>, 8)), itemValue)
-								</leftAligned>
-							)
+							let itemValue := <extractFromSlot>(srcSlotValue, mul(<srcStride>, srcItemIndexInSlot))
+							<?+alignRight>itemValue := <alignRight>(itemValue)</+alignRight>
+							dstSlotValue := <updateByteSlice>(dstSlotValue, mul(<dstStride>, j), itemValue)
 
 							<?srcMultiItemsInSlot>
-								srcSlotValue := <shiftRightSrc>(srcSlotValue)
 								srcItemIndexInSlot := add(srcItemIndexInSlot, 1)
 								if eq(srcItemIndexInSlot, <srcItemsPerSlot>) {
 									// here we are done with this slot, we need to read next one
@@ -1783,16 +1775,14 @@ string YulUtilFunctions::copyValueArrayStorageToStorageFunction(ArrayType const&
 		}
 		else
 		{
-			bool leftAligned =  _fromType.storageStride() < 32 && _fromType.baseType()->leftAligned();
-			templ("leftAligned", leftAligned);
-			templ("srcMask", (~u256(0) >> (256 - 8 * _fromType.storageStride())).str());
-			if (leftAligned)
-			{
-				templ("srcAlignLeft", shiftLeftFunction(256 - 8 * _fromType.storageStride()));
-				templ("shiftRightDyn", shiftRightFunctionDynamic());
-			}
-			else
-				templ("shiftLeftDyn", shiftLeftFunctionDynamic());
+			templ("srcStride", to_string(_fromType.storageStride()));
+			templ("extractFromSlot", extractFromStorageValueDynamic(*_fromType.baseType()));
+			templ("updateByteSlice", updateByteSliceFunctionDynamic(_toType.storageStride()));
+			bool needsAlignment = _toType.storageStride() < 32 && _toType.baseType()->leftAligned();
+			templ(
+				"alignRight",
+				needsAlignment ? shiftRightFunction(256 - 8 * _toType.storageStride()) : ""
+			);
 			templ("srcMultiItemsInSlot", _fromType.storageStride() <= 16);
 			templ("srcItemsPerSlot", to_string(32 / _fromType.storageStride()));
 			templ("shiftRightSrc", shiftRightFunction(_fromType.storageStride() * 8));
