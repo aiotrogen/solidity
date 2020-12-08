@@ -27,23 +27,23 @@ object "Arraysum_33" {
                     {
                         if callvalue() { revert(_1, _1) }
                         if slt(add(calldatasize(), not(3)), _1) { revert(_1, _1) }
-                        let vloc_sum := _1
-                        let vloc_i := _1
+                        let var_sum := _1
+                        let var_i := _1
                         let _2 := sload(_1)
                         for { }
-                        lt(vloc_i, _2)
+                        lt(var_i, _2)
                         {
-                            if gt(vloc_i, not(1)) { invalid() }
-                            vloc_i := add(vloc_i, 1)
+                            if gt(var_i, not(1)) { invalid() }
+                            var_i := add(var_i, 1)
                         }
                         {
                             mstore(_1, _1)
-                            let _3 := sload(add(keccak256(_1, 0x20), vloc_i))
-                            if gt(vloc_sum, not(_3)) { invalid() }
-                            vloc_sum := add(vloc_sum, _3)
+                            let _3 := sload(add(keccak256(_1, 0x20), var_i))
+                            if gt(var_sum, not(_3)) { invalid() }
+                            var_sum := add(var_sum, _3)
                         }
                         let memPos := allocateMemory(_1)
-                        return(memPos, sub(abi_encode_uint(memPos, vloc_sum), memPos))
+                        return(memPos, sub(abi_encode_uint(memPos, var_sum), memPos))
                     }
                 }
                 revert(0, 0)
